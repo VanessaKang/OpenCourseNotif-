@@ -19,4 +19,9 @@ from bs4 import BeautifulSoup
 r = requests.get("https://www.yellowpages.com/search?search_terms=coffee&geo_location_terms=Los+Angeles%2C+CA")
 
 soup = BeautifulSoup(r.content, 'html.parser')
-print(soup.prettify())
+for link in soup.find_all("a"):
+    print link.get("href")
+
+
+
+
