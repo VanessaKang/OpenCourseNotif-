@@ -15,12 +15,29 @@ from bs4 import BeautifulSoup
 ##    test = requests.get(link + "#q=test")
 ##    test.encoding = "ISO 8859-1"
 ##    print(test.text)
-    
-r = requests.get("https://www.yellowpages.com/search?search_terms=coffee&geo_location_terms=Los+Angeles%2C+CA")
 
-soup = BeautifulSoup(r.content, 'html.parser')
-for link in soup.find_all("a"):
-    print link.get("href")
+login_url = "https://epprd.mcmaster.ca/psp/prepprd/?cmd=login&languageCd=ENG"
+request_url = "Where I want to go "
+
+payload = { 'userid': 'x',
+            'pwd': 'xx'}
+
+
+with requests.Session() as s:
+    p = s.post(login_url, data = payload)
+    soup = BeautifulSoup(p.content, 'html.parser')
+    print soup.prettify()
+
+#Requesting to get a webpage (type anything in searchbar)
+#r = requests.get(url)
+
+###beautiful soup takes website content which we got from request r.content
+##soup = BeautifulSoup(r.content, 'html.parser')
+##
+###Parse through all links in a HTML document and title beside it 
+##for link in soup.find_all("a"):
+##    print "Link: '%s' //// %s" %(link.get("href"), link.text)
+
 
 
 
