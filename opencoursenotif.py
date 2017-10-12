@@ -6,13 +6,17 @@
 #############################
 
 import requests
+from bs4 import BeautifulSoup
 
-my_list_of_links = ["http://www.hipstercode.com",
-                    "http://www.hipstercode.com/about"]
-
-for index, link in enumerate(my_list_of_links):
-    test = requests.get(link)
-    test.encoding = "ISO 8859-1"
-    print(test.headers)
+##my_list_of_links = ["https://www.google.com/"]
+##
+##for index, link in enumerate(my_list_of_links):
+##    #payload = {'q' : 'test'}
+##    test = requests.get(link + "#q=test")
+##    test.encoding = "ISO 8859-1"
+##    print(test.text)
     
+r = requests.get("https://www.yellowpages.com/search?search_terms=coffee&geo_location_terms=Los+Angeles%2C+CA")
 
+soup = BeautifulSoup(r.content, 'html.parser')
+print(soup.prettify())
