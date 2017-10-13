@@ -39,7 +39,8 @@ with requests.Session() as session:
     row1 =  soup.find(id = "trSSR_REGFORM_VW$0_row1")
 
     coursedetails = row1.get_text("|", strip = True)
-
+    coursestatus = row1.find(id=lambda value: value and value.startswith("win0divDERIVED_REGFRM1_SSR_STATUS_LONG$")).img.get('alt')
+    print coursedetails + "|||" + coursestatus
 
     #Find all rows of classes that are in the enrollement cart
 ##    for ss in soup.find_all(id=lambda value: value and value.startswith("trSSR_REGFORM_VW$0_row")):
