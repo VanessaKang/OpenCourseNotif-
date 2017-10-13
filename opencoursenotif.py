@@ -10,9 +10,9 @@ from bs4 import BeautifulSoup
 
 
 #---Enter your credentials here-----------------------
-macid = 'xxx'
-password = 'XXXX'
-studentnumber = 'XXXX' #exclude the leading zeros
+macid = 'XXX'
+password = 'XXX'
+studentnumber = 'XXX' #exclude the leading zeros
 #-----------------------------------------------------
 
 #This is the login url needed to get onto Mosaic 
@@ -35,9 +35,16 @@ with requests.Session() as session:
     #Getting Beautiful Soup to parse through the document
     soup = BeautifulSoup(enroll_page.text, 'html.parser')
 
+    #I know how to iterate through the rows, lets test parsing from one row first 
+    row1 =  soup.find(id = "trSSR_REGFORM_VW$0_row1")
+
+    coursedetails = row1.get_text("|", strip = True)
+
+
     #Find all rows of classes that are in the enrollement cart
-    for ss in soup.find_all(id=lambda value: value and value.startswith("trSSR_REGFORM_VW$0_row")):
-        print ss
+##    for ss in soup.find_all(id=lambda value: value and value.startswith("trSSR_REGFORM_VW$0_row")):
+##        coursedetails = ss.get_text("|", strip = True)
+##        print " %s ---------------------------------------------------" %(ss)
 
 #------------------------- Currently testing 
 ##    for status in soup.find_all(id = 'win0divDERIVED_REGFRM1_SSR_STATUS_LONG$1'):
