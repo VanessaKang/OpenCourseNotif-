@@ -8,36 +8,45 @@
 import requests
 from bs4 import BeautifulSoup
 
-##my_list_of_links = ["https://www.google.com/"]
-##
-##for index, link in enumerate(my_list_of_links):
-##    #payload = {'q' : 'test'}
-##    test = requests.get(link + "#q=test")
-##    test.encoding = "ISO 8859-1"
-##    print(test.text)
 
+#---Enter your credentials here-----------------------
+macid = 'xxx'
+password = 'XXXX'
+studentnumber = 'XXXX' #exclude the leading zeros
+#-----------------------------------------------------
+
+#This is the login url needed to get onto Mosaic 
 login_url = "https://epprd.mcmaster.ca/psp/prepprd/?cmd=login&languageCd=ENG"
-request_url = "Where I want to go "
 
-payload = { 'userid': 'x',
-            'pwd': 'xx'}
+#This is the url of the enrollment shopping cart
+request_url = "https://csprd.mcmaster.ca/psc/prcsprd/EMPLOYEE/HRMS_LS/c/SA_LEARNER_SERVICES.SSR_SSENRL_CART.GBL?Page=SSR_SSENRL_CART&Action=A&ACAD_CAREER=UGRD&EMPLID="+str(studentnumber)+"&INSTITUTION=MCMST&STRM=2181&TargetFrameName=None"
+
+#This includes the name and password to get onto the site 
+payload = { 'userid': macid,'pwd': password }
 
 
-with requests.Session() as s:
-    p = s.post(login_url, data = payload)
-    soup = BeautifulSoup(p.content, 'html.parser')
-    print soup.prettify()
+with requests.Session() as session:
+    #creates a session and logs your credentials in
+    post = session.post(login_url, data = payload)
 
-#Requesting to get a webpage (type anything in searchbar)
-#r = requests.get(url)
+    #Navigate to the intended enrollment cart page
+    enroll_page = session.get(request_url)
 
-###beautiful soup takes website content which we got from request r.content
-##soup = BeautifulSoup(r.content, 'html.parser')
-##
-###Parse through all links in a HTML document and title beside it 
-##for link in soup.find_all("a"):
-##    print "Link: '%s' //// %s" %(link.get("href"), link.text)
+    #Getting Beautiful Soup to parse through the document
+    soup = BeautifulSoup(enroll_page.text, 'html.parser')
 
+    #Find all rows of classes that are in the enrollement cart
+    for ss in soup.find_all(id=lambda value: value and value.startswith("trSSR_REGFORM_VW$0_row")):
+        print ss
+
+#------------------------- Currently testing 
+##    for status in soup.find_all(id = 'win0divDERIVED_REGFRM1_SSR_STATUS_LONG$1'):
+##        print status.img.get('alt')
+
+#Parse through all links in a HTML document and title beside it 
+##    for link in soup.find_all("a"):
+##        print "Link: '%s' //// %s" %(link.get("href"), link.text)
+#-------------------------
 
 
 
