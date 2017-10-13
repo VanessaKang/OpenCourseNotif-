@@ -1,8 +1,7 @@
 #############################
 #Name: Vanessa Kang
 #Date started: September 30, 2017
-#Purpose: Determine when closed course is open so that notified students can enroll
-#Version: 1
+#Purpose: Determine when a course is open or closed for enrollment and notify user when the course is availiable for Enrollment
 #############################
 
 import requests
@@ -10,9 +9,9 @@ from bs4 import BeautifulSoup
 
 
 #---Enter your credentials here-----------------------
-macid = 'XXX'
-password = 'XXX'
-studentnumber = 'XXX' #exclude the leading zeros
+macid = 'xxxxxxx'
+password = 'xxxxxxxx'
+studentnumber = 'xxxxxxx' #exclude the leading zeros
 #-----------------------------------------------------
 
 #This is the login url needed to get onto Mosaic 
@@ -26,35 +25,42 @@ payload = { 'userid': macid,'pwd': password }
 
 
 with requests.Session() as session:
-    #creates a session and logs your credentials in
+    #Logs in using your credentials and creates a session where you stay logged in 
     post = session.post(login_url, data = payload)
 
-    #Navigate to the intended enrollment cart page
+    #Navigate to McMaster Enrollment Cart Page
     enroll_page = session.get(request_url)
 
-    #Getting Beautiful Soup to parse through the document
+    #Getting Beautiful Soup to parse through the HTML content
     soup = BeautifulSoup(enroll_page.text, 'html.parser')
 
-    #I know how to iterate through the rows, lets test parsing from one row first 
-    row1 =  soup.find(id = "trSSR_REGFORM_VW$0_row1")
+    #Find all rows of classes that are in the enrollement cart 
+    for ss in soup.find_all(id=lambda value: value and value.startswith("trSSR_REGFORM_VW$0_row")):
+        
+        #Obtain all the course details including Course Code,Course Number, Schedule (Date and Time), Room Number, Teacher, Units
+        coursedetails = ss.get_text("|", strip = True)
 
-    coursedetails = row1.get_text("|", strip = True)
-    coursestatus = row1.find(id=lambda value: value and value.startswith("win0divDERIVED_REGFRM1_SSR_STATUS_LONG$")).img.get('alt')
-    print coursedetails + "|||" + coursestatus
+        #Obtain the enrollment status of the course (Closed or Open) 
+        coursestatus = ss.find(id=lambda value: value and value.startswith("win0divDERIVED_REGFRM1_SSR_STATUS_LONG$")).img.get('alt')
 
-    #Find all rows of classes that are in the enrollement cart
-##    for ss in soup.find_all(id=lambda value: value and value.startswith("trSSR_REGFORM_VW$0_row")):
-##        coursedetails = ss.get_text("|", strip = True)
-##        print " %s ---------------------------------------------------" %(ss)
+        # Print back course details into a nice printed statement
+        print coursedetails + "|||" + coursestatus
+        
 
-#------------------------- Currently testing 
+
+#------------------------- Currently testing---------------------------------------
+
+#I know how to iterate through the rows, lets test parsing from one row first 
+#row1 =  soup.find(id = "trSSR_REGFORM_VW$0_row1")
+#print " %s ---------------------------------------------------" %(ss)
+        
 ##    for status in soup.find_all(id = 'win0divDERIVED_REGFRM1_SSR_STATUS_LONG$1'):
 ##        print status.img.get('alt')
 
 #Parse through all links in a HTML document and title beside it 
 ##    for link in soup.find_all("a"):
 ##        print "Link: '%s' //// %s" %(link.get("href"), link.text)
-#-------------------------
+#-------------------------------------------------------------------------------
 
 
 
