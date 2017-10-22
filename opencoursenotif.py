@@ -9,12 +9,10 @@ import requests
 from bs4 import BeautifulSoup
 from xlwt import Workbook
 
-#---Enter your credentials here-----------------------
+#Credentials here
 macid = raw_input("What is your MacID?: ")
 password = raw_input("What is your password?: ")
 studentnumber = raw_input("Student Number (exclude leading zeros): ")
-#excelfile = raw_input("Excel File Name?: ")
-#-----------------------------------------------------
 
 #This is the login url needed to get onto Mosaic 
 login_url = "https://epprd.mcmaster.ca/psp/prepprd/?cmd=login&languageCd=ENG"
@@ -25,19 +23,13 @@ request_url = "https://csprd.mcmaster.ca/psc/prcsprd/EMPLOYEE/HRMS_LS/c/SA_LEARN
 #This includes the name and password to get onto the site 
 payload = { 'userid': macid,'pwd': password }
 
-#--------------Excel Initialization ------------ 
+#Excel Initialization 
 wb = Workbook()
 sheet1 = wb.add_sheet("Courses")
-sheet1.write(1,0, "Course")
-sheet1.write(1,1, "Course Number")
-sheet1.write(1,2, "Time")
-sheet1.write(1,3, "Room Number")
-sheet1.write(1,4, "Teacher")
-sheet1.write(1,5, "Units")
-
-for i in range(0,5):
+attribute = ["Course","Course Number","Time","Room Number","Teacher","Units"]
+for i in range(0,6):
     sheet1.col(i).width = 7000
-#------------------------------------------------
+    sheet1.write(1,i, attribute[i])
 
 
 with requests.Session() as session:
@@ -62,10 +54,8 @@ with requests.Session() as session:
                 eachcol = eachcol + 1
             eachrow = eachrow + 1
             
-        else:
-            #print coursedetails + "|||" + coursestatus
 
-    wb.save("coursetracker.xls")
+wb.save("coursetracker.xls")
         
 
 
@@ -98,7 +88,3 @@ with requests.Session() as session:
 ##
 ##        # Print back course details into a nice printed statement
 ##        print coursedetails + "|||" + coursestatus
-
-
-
-
