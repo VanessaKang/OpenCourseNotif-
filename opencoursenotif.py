@@ -2,16 +2,18 @@
 #Name: Vanessa Kang
 #Date started: September 30, 2017
 #Purpose: Determine when a course is open or closed for enrollment and notify user when the course is availiable for Enrollment
+#Version: 4
 #############################
 
 import requests
 from bs4 import BeautifulSoup
-
+from xlwt import Workbook
 
 #---Enter your credentials here-----------------------
-macid = 'xxxxxxx'
-password = 'xxxxxxxx'
-studentnumber = 'xxxxxxx' #exclude the leading zeros
+macid = raw_input("What is your MacID?: ")
+password = raw_input("What is your password?: ")
+studentnumber = raw_input("Student Number (exclude leading zeros): ")
+#excelfile = raw_input("Excel File Name?: ")
 #-----------------------------------------------------
 
 #This is the login url needed to get onto Mosaic 
@@ -22,6 +24,20 @@ request_url = "https://csprd.mcmaster.ca/psc/prcsprd/EMPLOYEE/HRMS_LS/c/SA_LEARN
 
 #This includes the name and password to get onto the site 
 payload = { 'userid': macid,'pwd': password }
+
+#--------------Excel Initialization ------------ 
+wb = Workbook()
+sheet1 = wb.add_sheet("Courses")
+sheet1.write(1,0, "Course")
+sheet1.write(1,1, "Course Number")
+sheet1.write(1,2, "Time")
+sheet1.write(1,3, "Room Number")
+sheet1.write(1,4, "Teacher")
+sheet1.write(1,5, "Units")
+
+for i in range(0,5):
+    sheet1.col(i).width = 7000
+#------------------------------------------------
 
 
 with requests.Session() as session:
@@ -34,21 +50,29 @@ with requests.Session() as session:
     #Getting Beautiful Soup to parse through the HTML content
     soup = BeautifulSoup(enroll_page.text, 'html.parser')
 
-    #Find all rows of classes that are in the enrollement cart 
+    eachrow = 2
     for ss in soup.find_all(id=lambda value: value and value.startswith("trSSR_REGFORM_VW$0_row")):
-        
-        #Obtain all the course details including Course Code,Course Number, Schedule (Date and Time), Room Number, Teacher, Units
-        coursedetails = ss.get_text("|", strip = True)
-
-        #Obtain the enrollment status of the course (Closed or Open) 
         coursestatus = ss.find(id=lambda value: value and value.startswith("win0divDERIVED_REGFRM1_SSR_STATUS_LONG$")).img.get('alt')
+        coursedetails = ss.get_text("|", strip = True)
+        
+        eachcol = 0 
+        if coursestatus == "Closed":
+            for string in ss.stripped_strings:
+                sheet1.write(eachrow,eachcol,string)
+                eachcol = eachcol + 1
+            eachrow = eachrow + 1
+            
+        else:
+            #print coursedetails + "|||" + coursestatus
 
-        # Print back course details into a nice printed statement
-        print coursedetails + "|||" + coursestatus
+    wb.save("coursetracker.xls")
         
 
 
-#------------------------- Currently testing---------------------------------------
+        
+
+
+#------------Version 2-----------------------------------------------------------------------------
 
 #I know how to iterate through the rows, lets test parsing from one row first 
 #row1 =  soup.find(id = "trSSR_REGFORM_VW$0_row1")
@@ -60,7 +84,20 @@ with requests.Session() as session:
 #Parse through all links in a HTML document and title beside it 
 ##    for link in soup.find_all("a"):
 ##        print "Link: '%s' //// %s" %(link.get("href"), link.text)
-#-------------------------------------------------------------------------------
+
+#-----------Version 3- Just getting it to print out courses--------------------------------------------
+    
+      #Find all rows of classes that are in the enrollement cart 
+##    for ss in soup.find_all(id=lambda value: value and value.startswith("trSSR_REGFORM_VW$0_row")):
+##        
+##        #Obtain all the course details including Course Code,Course Number, Schedule (Date and Time), Room Number, Teacher, Units
+##        coursedetails = ss.get_text("|", strip = True)
+##
+##        #Obtain the enrollment status of the course (Closed or Open) 
+##        coursestatus = ss.find(id=lambda value: value and value.startswith("win0divDERIVED_REGFRM1_SSR_STATUS_LONG$")).img.get('alt')
+##
+##        # Print back course details into a nice printed statement
+##        print coursedetails + "|||" + coursestatus
 
 
 
