@@ -8,6 +8,7 @@
 import requests
 from bs4 import BeautifulSoup
 from xlwt import Workbook
+import getpass
 
 #Credentials here
 macid = raw_input("What is your MacID?: ")
