@@ -108,21 +108,21 @@ def courseChecker(mosaicCourseDetails):
                 continue
             else:
                 # Send Status to twilio message
-                twilioMessage.append("Course: %s has changed status from [%s] to [%s]" % (loggedCourseDetails[j][0], loggedCourseDetails[j][5], mosaicCourseDetails[j][5]))
+                twilioMessage.append("Course: %s has changed status from [%s] to [%s]." % (loggedCourseDetails[j][0], loggedCourseDetails[j][5], mosaicCourseDetails[j][5]))
                 # [Make Sure to implement in the future] change logged file status once recognized
         else:
-            twilioMessage.append("[Course: %s] that was previously logged is no longer in your Enrollment Cart" % (loggedCourseDetails[j][0]))
+            twilioMessage.append("[Course: %s] that was previously logged is no longer in your Enrollment Cart." % (loggedCourseDetails[j][0]))
 
     # If nothing has been added to the TwilioMessage array from previous for loop, then nothing about course status has changed
     if len(twilioMessage) == 0:
-        twilioMessage.append("There is no changes to your course status")
+        twilioMessage.append("There is no changes to your course status.")
 
     return twilioMessage
 
 
 def sendTwilio(twilioMessage):
     #----------------------------------------------
-    # Send out Message of course change using Twilio API
+    # Send out message of course change using Twilio API
     #----------------------------------------------
 
     # Initialze Twilio account, token and number (this has to be generated from user)
@@ -173,5 +173,4 @@ if __name__ == "__main__":
         sendTwilio(twilioMessage)
     else:
         creatingCourseLog(mosaicCourseDetails)
-        twilioMessage.append("Your Enrollment cart is now been logged.You will receive a text message if anything changes")
-        sendTwilio(twilioMessage)
+        sendTwilio("Your Enrollment cart is now been logged. You will receive a text message if anything changes.")
