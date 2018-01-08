@@ -1,6 +1,5 @@
 #############################
 # Name: Vanessa Kang
-# Date started: September 30, 2017
 # Purpose: Determine when a course is open or closed for enrollment and notify user of changes in course status (Open/Closed)
 #############################
 
@@ -16,7 +15,7 @@ import myconfig as cfg
 
 def getMosaicDetails(login_url, request_url, payload):
     #----------------------------------------------
-    # This goes into Mosaic Enrollment Cart and creates a nested list out of each course
+    # This goes into Mosaic Enrollment Cart and logs details into a list (mosaicCourseDetails)
     #----------------------------------------------
 
     with requests.Session() as session:
@@ -50,9 +49,9 @@ def getMosaicDetails(login_url, request_url, payload):
 
 def creatingCourseLog(mosaicCourseDetails):
     #----------------------------------------------
-    # Creates an Excel file (courselogger.xls) that logs all course details from Mosaic Enrollment Cart
-    # This is usually ran when the program is initially ran or
-    #    if the person wants to update their log file (has to delete courselogger.xls in their directory first)
+    # Creates an Excel file (courselog.xls) that logs all course details from Mosaic Enrollment Cart
+    # This function will run when user intially runs this program to create a log to keep track of course details or
+    #    if the person wants to update their log file (has to delete courselog.xls in their directory first)
     #----------------------------------------------
 
     wb = Workbook()
@@ -78,7 +77,7 @@ def creatingCourseLog(mosaicCourseDetails):
 
 def courseChecker(mosaicCourseDetails):
     #----------------------------------------------
-    # Checks courses in logged excel file (courselogger.xls) has changed status by checking against Mosaic Enrollment Cart Status
+    # Checks if courses in logged excel file (courselog.xls) has changed status by checking against Mosaic Enrollment Cart course statuses
     # If there are any changes in status (Open -> Closed) or (Closed -> Open), then text messages TO BE SENT will be returned
     #----------------------------------------------
 
@@ -86,12 +85,12 @@ def courseChecker(mosaicCourseDetails):
     book = xlrd.open_workbook("courselog.xls")
     courseSheet = book.sheet_by_index(0)
 
-    # Checks the number of rows and columns in courselogger.xls
+    # Checks the number of rows and columns in courselog.xls
     rowNumber = courseSheet.nrows
     colNumber = courseSheet.ncols
 
     # Create a nested list of course details from excel file (courselogger.xls)
-    # NOTE: Course details from Mosaic Enrollment Cart is __ALSO__ a nested list
+    # NOTE: Course details from Mosaic Enrollment Cart is ALSO a nested list
     loggedCourseDetails = []
     for i in range(2, rowNumber):
         loggedCourseDetails.append(courseSheet.row_values(i))
@@ -99,7 +98,7 @@ def courseChecker(mosaicCourseDetails):
     # Text messages to be sent will be logged into this array
     twilioMessage = []
 
-    # Compares course details in logged file (courselog.xls) with Mosaic Enrollment Cart course statuses
+    # Compares course details in logged file (courselog.xls) with Mosaic Enrollment Cart course status (mosaicCourseDetails)
     for j in range(0, rowNumber - 2):
         # Checks if logged COURSENAME (in courselog.xls) is in Mosaic Shopping Cart nested list (mosaicCourseDetails)
         if any(loggedCourseDetails[j][0] in item for item in mosaicCourseDetails):
